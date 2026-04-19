@@ -15,6 +15,22 @@ export const RegisterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
+  const calculateStrength = (pass: string) => {
+    let score = 0;
+    if (pass.length > 7) score += 25;
+    if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score += 25;
+    if (/\d/.test(pass)) score += 25;
+    if (/[^a-zA-Z\d]/.test(pass)) score += 25;
+    return score;
+  };
+  
+  const strengthScore = calculateStrength(password);
+  const getStrengthColor = () => {
+    if (strengthScore < 50) return 'bg-error-500';
+    if (strengthScore < 100) return 'bg-warning-500';
+    return 'bg-success-500';
+  };
+  
   const { register } = useAuth();
   const navigate = useNavigate();
   
@@ -122,15 +138,30 @@ export const RegisterPage: React.FC = () => {
               startAdornment={<Mail size={18} />}
             />
             
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              fullWidth
-              startAdornment={<Lock size={18} />}
-            />
+            <div>
+              <Input
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                fullWidth
+                startAdornment={<Lock size={18} />}
+              />
+              {password && (
+                <div className="mt-2 text-right">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                    <div 
+                      className={`h-1.5 rounded-full transition-all duration-300 ${getStrengthColor()}`} 
+                      style={{ width: `${Math.max(10, strengthScore)}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs mt-1 font-medium text-gray-500">
+                    {strengthScore < 50 ? 'Weak' : strengthScore < 100 ? 'Good' : 'Strong'}
+                  </p>
+                </div>
+              )}
+            </div>
             
             <Input
               label="Confirm password"

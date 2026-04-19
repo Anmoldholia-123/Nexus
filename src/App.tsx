@@ -30,6 +30,15 @@ import { DealsPage } from './pages/deals/DealsPage';
 // Chat Pages
 import { ChatPage } from './pages/chat/ChatPage';
 
+// Meeting Pages
+import { MeetingsPage } from './pages/meetings/MeetingsPage';
+
+// Payment Pages
+import { PaymentsPage } from './pages/payments/PaymentsPage';
+
+// Video Pages
+import { VideoCallPage } from './pages/video/VideoCallPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -84,11 +93,22 @@ function App() {
             <Route index element={<DealsPage />} />
           </Route>
           
+          <Route path="/payments" element={<DashboardLayout />}>
+            <Route index element={<PaymentsPage />} />
+          </Route>
+          
+          <Route path="/meetings" element={<DashboardLayout />}>
+            <Route index element={<MeetingsPage />} />
+          </Route>
+          
           {/* Chat Routes */}
           <Route path="/chat" element={<DashboardLayout />}>
             <Route index element={<ChatPage />} />
             <Route path=":userId" element={<ChatPage />} />
           </Route>
+          
+          {/* Video Call Route Outside Dashboard */}
+          <Route path="/call/:id" element={<VideoCallPage />} />
           
           {/* Redirect root to login */}
           <Route path="/" element={<Navigate to="/login" replace />} />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, PieChart, Filter, Search, PlusCircle } from 'lucide-react';
+import { Users, PieChart, Filter, Search, PlusCircle, Calendar, CreditCard } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -10,6 +10,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Entrepreneur } from '../../types';
 import { entrepreneurs } from '../../data/users';
 import { getRequestsFromInvestor } from '../../data/collaborationRequests';
+import { getConfirmedMeetingsForUser } from '../../data/meetings';
+import { getWalletBalance } from '../../data/payments';
 
 export const InvestorDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -21,6 +23,8 @@ export const InvestorDashboard: React.FC = () => {
   // Get collaboration requests sent by this investor
   const sentRequests = getRequestsFromInvestor(user.id);
   const requestedEntrepreneurIds = sentRequests.map(req => req.entrepreneurId);
+  const meetingsCount = user ? getConfirmedMeetingsForUser(user.id).length : 0;
+  const balance = user ? getWalletBalance(user.id) : 0;
   
   // Filter entrepreneurs based on search and industry filters
   const filteredEntrepreneurs = entrepreneurs.filter(entrepreneur => {
@@ -101,7 +105,7 @@ export const InvestorDashboard: React.FC = () => {
       </div>
       
       {/* Stats summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
             <div className="flex items-center">
@@ -141,6 +145,34 @@ export const InvestorDashboard: React.FC = () => {
                 <h3 className="text-xl font-semibold text-accent-900">
                   {sentRequests.filter(req => req.status === 'accepted').length}
                 </h3>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+        
+        <Card className="bg-success-50 border border-success-100">
+          <CardBody>
+            <div className="flex items-center">
+              <div className="p-3 bg-success-100 rounded-full mr-4">
+                <Calendar size={20} className="text-success-700" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-success-700">Upcoming Meetings</p>
+                <h3 className="text-xl font-semibold text-success-900">{meetingsCount}</h3>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+        
+        <Card className="bg-indigo-50 border border-indigo-100">
+          <CardBody>
+            <div className="flex items-center">
+              <div className="p-3 bg-indigo-100 rounded-full mr-4">
+                <CreditCard size={20} className="text-indigo-700" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-indigo-700">Wallet Balance</p>
+                <h3 className="text-xl font-semibold text-indigo-900">${balance.toLocaleString()}</h3>
               </div>
             </div>
           </CardBody>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, ExternalLink } from 'lucide-react';
+import { MessageCircle, ExternalLink, CircleDollarSign } from 'lucide-react';
 import { Entrepreneur } from '../../types';
+import { useAuth } from '../../context/AuthContext';
 import { Card, CardBody, CardFooter } from '../ui/Card';
 import { Avatar } from '../ui/Avatar';
 import { Badge } from '../ui/Badge';
@@ -17,6 +18,7 @@ export const EntrepreneurCard: React.FC<EntrepreneurCardProps> = ({
   showActions = true
 }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const handleViewProfile = () => {
     navigate(`/profile/entrepreneur/${entrepreneur.id}`);
@@ -25,6 +27,11 @@ export const EntrepreneurCard: React.FC<EntrepreneurCardProps> = ({
   const handleMessage = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click
     navigate(`/chat/${entrepreneur.id}`);
+  };
+
+  const handleFund = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate('/payments');
   };
   
   return (
@@ -74,15 +81,28 @@ export const EntrepreneurCard: React.FC<EntrepreneurCardProps> = ({
       </CardBody>
       
       {showActions && (
-        <CardFooter className="border-t border-gray-100 bg-gray-50 flex justify-between">
-          <Button
-            variant="outline"
-            size="sm"
-            leftIcon={<MessageCircle size={16} />}
-            onClick={handleMessage}
-          >
-            Message
-          </Button>
+        <CardFooter className="border-t border-gray-100 bg-gray-50 flex justify-between gap-2 overflow-x-auto">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<MessageCircle size={16} />}
+              onClick={handleMessage}
+            >
+              Message
+            </Button>
+            
+            {user?.role === 'investor' && (
+               <Button
+                 variant="outline"
+                 size="sm"
+                 onClick={handleFund}
+                 leftIcon={<CircleDollarSign size={16} className="text-secondary-600"/>}
+               >
+                 Fund Deal
+               </Button>
+            )}
+          </div>
           
           <Button
             variant="primary"

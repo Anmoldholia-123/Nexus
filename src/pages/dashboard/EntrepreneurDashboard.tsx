@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle } from 'lucide-react';
+import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle, CreditCard } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
@@ -10,17 +10,22 @@ import { useAuth } from '../../context/AuthContext';
 import { CollaborationRequest } from '../../types';
 import { getRequestsForEntrepreneur } from '../../data/collaborationRequests';
 import { investors } from '../../data/users';
+import { getConfirmedMeetingsForUser } from '../../data/meetings';
+import { getWalletBalance } from '../../data/payments';
 
 export const EntrepreneurDashboard: React.FC = () => {
   const { user } = useAuth();
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
   const [recommendedInvestors, setRecommendedInvestors] = useState(investors.slice(0, 3));
+  const [meetingsCount, setMeetingsCount] = useState(0);
+  const [balance, setBalance] = useState(getWalletBalance(user?.id || ''));
   
   useEffect(() => {
     if (user) {
       // Load collaboration requests
       const requests = getRequestsForEntrepreneur(user.id);
       setCollaborationRequests(requests);
+      setMeetingsCount(getConfirmedMeetingsForUser(user.id).length);
     }
   }, [user]);
   
@@ -54,7 +59,7 @@ export const EntrepreneurDashboard: React.FC = () => {
       </div>
       
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
             <div className="flex items-center">
@@ -93,7 +98,7 @@ export const EntrepreneurDashboard: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-medium text-accent-700">Upcoming Meetings</p>
-                <h3 className="text-xl font-semibold text-accent-900">2</h3>
+                <h3 className="text-xl font-semibold text-accent-900">{meetingsCount}</h3>
               </div>
             </div>
           </CardBody>
@@ -108,6 +113,20 @@ export const EntrepreneurDashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-success-700">Profile Views</p>
                 <h3 className="text-xl font-semibold text-success-900">24</h3>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+        
+        <Card className="bg-indigo-50 border border-indigo-100">
+          <CardBody>
+            <div className="flex items-center">
+              <div className="p-3 bg-indigo-100 rounded-full mr-4">
+                <CreditCard size={20} className="text-indigo-700" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-indigo-700">Wallet Balance</p>
+                <h3 className="text-xl font-semibold text-indigo-900">${balance.toLocaleString()}</h3>
               </div>
             </div>
           </CardBody>
